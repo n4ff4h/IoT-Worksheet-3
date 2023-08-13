@@ -1,14 +1,15 @@
-# IoT Worksheet 3
+# IoT Worksheet 3 - Password unlocking system
 
-The objective of this is to communicate a microbit with a server. I have chose FastAPI as the server. A middleware exists to read and write serial data to and from the server and the microbit. The microbit will send "Hello" as serial data using a print function when button 'A' is pressed. This data will be decoded into a string in the middleware and a get request to the root route of the server is sent which will return a response of "Hello, world!". This response is then forwarded to the microbit and displayed on the microbit screen.
+So the aim of this project is to simulate the authorization of users when the correct button combination is pressed. This project involves three things, a microbit which sends the button combination, an interceptor program which listens on the microbits serial port for serial data transmission and a fastapi server connected to a database which validates users credentials.
 
 ## How it works
 
-1. When the button is pressed, the microbit executes a print function which will be sent through the serial stream.
-2. In the computer, the middleware program will be listening for any data using the pyserial library on the specific serial port with the specific baudrate, 115200.
-3. When it receives the data from the microbit, using requests library, sends a get request to the running fast api server.
-4. The fast api server receives the the request at the endpoint and sends a response back to the middleware where it will be sent back to through the serial port to the microbit.
-5. Now, the microbit will be contantly listening for serial data and as soon as it receives, the data, using the uart library, The data will be decoded and displayed on the microbit screen.
+1. The microbit checks if a button combination is entered within a timeframe of 2 seconds right after the last button is pressed.
+2. If there is a button combination, the microbit will send serial data to the computer using a print function.
+3. The interceptor program which contantly listens on the microbits serial port will receive the data and a post request with that data is sent to the fastapi server.
+4. When the server receives the request, it fetches all the passwords which matches the password from the request and responds with either Authorized or Unauthorized.
+5. The interceptor program will then receive the response which will be sent back to the microbit using pyserial.
+6. The microbit will be listening constantly for serial data from the computer using the uart library, and as soon as it receives the response data from the interceptor program, it then displays it on the microbit screen.
 
 ## Libraries Used
 
