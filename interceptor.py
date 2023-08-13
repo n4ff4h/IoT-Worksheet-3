@@ -12,7 +12,7 @@ def main(serial_port):
                     print(data)
                     
                     # Make a get request to fast api server
-                    r = requests.get('http://127.0.0.1:8000/')
+                    r = requests.post('http://127.0.0.1:8000/', params={"password": data})
                     print(r.content.decode())
                     if r.status_code == 200:
                         ser.write(r.content)

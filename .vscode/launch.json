@@ -17,7 +17,7 @@
       "name": "Python: Middleware",
       "type": "python",
       "request": "launch",
-      "program": "${workspaceFolder}/middleware.py"
+      "program": "${workspaceFolder}/interceptor.py"
     }
   ],
   "compounds": [

@@ -1,20 +1,54 @@
 from microbit import *
 import music
 
+# detect a new passphrase if the user did not press a button for more than 2000ms.
+PASSPHRASE_THRESHOLD = 2000
+
+passphrase = ''
+
 uart.init(baudrate=115200)
 
-while True:
-    if button_a.was_pressed():
-        # This will be sent through serial.
-        print("Hello")
-        music.pitch(440)
-        sleep(250)
-        music.stop()
+# Initially 0
+started_to_wait = running_time()
 
-    # Check for incoming data
-    if uart.any():
-        data = uart.readline().decode().strip()
-        display.scroll(data)
-        
-
+# Displays character and add to buffer
+def button_action(letter: str):
+    global passphrase, started_to_wait
     
+    display.show(letter)
+    passphrase = passphrase + letter  # Buffer updated
+    started_to_wait = running_time()  # Started to wait is reset
+    music.pitch(440)
+    sleep(250)
+    music.stop()
+    display.clear()
+
+while True:
+    # Work out how long the device has been waiting for a keypress.
+    waiting = running_time() - started_to_wait
+    
+    if button_a.was_pressed():
+        button_action("A")
+        
+    elif button_b.was_pressed():
+        button_action("B")
+
+    elif pin_logo.is_touched():
+        button_action("C")
+
+    # So waiting basically greater than two seconds and there is a passphrase
+    elif len(passphrase) > 0 and waiting > PASSPHRASE_THRESHOLD:
+        print(passphrase)
+        passphrase = ''
+
+        # Check for incoming data
+        if uart.any():
+            data = uart.readline().decode().strip()
+            display.scroll(data)
+        
+        # Reset waiting time now that a response from server is received
+        started_to_wait = running_time()
+
+
+
+
